@@ -240,6 +240,7 @@ body {
     border-radius: 15px;
     border: 2px solid #ffd700;
     padding: 15px;
+    overflow: hidden;
 }
 
 .minimap-title {
@@ -262,6 +263,8 @@ body {
     font-size: 12px;
     text-align: center;
     transition: all 0.3s ease;
+    word-wrap: break-word;
+    overflow: hidden;
 }
 
 .minimap-dot.active {
@@ -389,9 +392,9 @@ body {
 .scene-text-box {
     position: absolute;
     bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
+    left: 20px;
+    right: 350px;
+    max-width: 700px;
     background: rgba(0, 0, 0, 0.9);
     padding: 20px;
     border-radius: 15px;
@@ -565,6 +568,13 @@ body {
     border-radius: 50%;
     cursor: pointer;
     font-size: 20px;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.toggle-inventory:hover {
+    background: #ffed4e;
+    transform: scale(1.1);
 }
 
 /* ========== QUEST PANEL ========== */
@@ -773,6 +783,17 @@ body {
     .action-btn {
         font-size: 12px;
         height: 60px;
+    }
+    
+    .scene-text-box {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    #combatLog {
+        width: 250px;
+        right: 10px;
     }
 }
 

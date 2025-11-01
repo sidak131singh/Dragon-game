@@ -1,6 +1,4 @@
-// ========== ENHANCED DRAGON REPELLER RPG - COMPLETE SYSTEM ==========
 
-// ========== GAME STATE & PLAYER DATA ==========
 let gameState = {
     // Player Stats
     player: {
@@ -712,7 +710,11 @@ function updateInventoryDisplay() {
 
 function toggleInventory() {
     const panel = document.getElementById('inventoryPanel');
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    if (panel.style.display === 'none') {
+        panel.style.display = '';
+    } else {
+        panel.style.display = 'none';
+    }
 }
 
 // ========== COMBAT LOG ==========
