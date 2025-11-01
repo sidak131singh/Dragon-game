@@ -2,27 +2,215 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RPG - Dragon Repeller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Repeller RPG - Enhanced Edition</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=MedievalSharp&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="game">
-        <div id="stats">
-            <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
-            <span class="stat">Health: <strong><span id="healthText">100</span></strong></span>
-            <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
+    <!-- Start Menu -->
+    <div id="startMenu" class="menu-screen active">
+        <div class="menu-content">
+            <h1 class="game-title glow">Dragon Repeller</h1>
+            <p class="subtitle">Enhanced Edition</p>
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="startNewGame()">New Game</button>
+                <button class="menu-btn" onclick="continueGame()">Continue</button>
+                <button class="menu-btn" onclick="showSettings()">Settings</button>
+                <button class="menu-btn" onclick="showCredits()">Credits</button>
+            </div>
         </div>
-        <div id="controls">
-            <button id="button1">Go to store</button>
-            <button id="button2">Go to cave</button>
-            <button id="button3">Fight dragon</button>
-        </div>
-        <div id="monsterStats">
-            <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
-            <span class="stat">Health: <strong><span id="monsterHealth"></span></strong></span>
-        </div>
-        <div id="text">Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.</div>
     </div>
-    <script src="script.js"></script>
+
+    <!-- Settings Menu -->
+    <div id="settingsMenu" class="menu-screen">
+        <div class="menu-content">
+            <h2>Settings</h2>
+            <div class="settings-option">
+                <label>Background Music</label>
+                <input type="checkbox" id="musicToggle" checked>
+            </div>
+            <div class="settings-option">
+                <label>Sound Effects</label>
+                <input type="checkbox" id="sfxToggle" checked>
+            </div>
+            <div class="settings-option">
+                <label>Animation Speed</label>
+                <select id="animSpeed">
+                    <option value="slow">Slow</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="fast">Fast</option>
+                </select>
+            </div>
+            <button class="menu-btn" onclick="hideSettings()">Back</button>
+        </div>
+    </div>
+
+    <!-- Credits Menu -->
+    <div id="creditsMenu" class="menu-screen">
+        <div class="menu-content">
+            <h2>Credits</h2>
+            <p>Game Design & Development: You</p>
+            <p>Enhanced by: GitHub Copilot</p>
+            <p>Music: Royalty-free tracks</p>
+            <p>Art: Community resources</p>
+            <button class="menu-btn" onclick="hideCredits()">Back</button>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="gameContainer" class="hidden">
+        <!-- Top HUD -->
+        <div id="topHUD">
+            <div class="player-info-card">
+                <div class="player-avatar">
+                    <img src="player-sprite.png" alt="Player" onerror="this.style.display='none'">
+                </div>
+                <div class="player-details">
+                    <h3 id="playerName">Hero</h3>
+                    <p>Level <span id="levelText">1</span></p>
+                </div>
+            </div>
+
+            <div class="stat-bars">
+                <div class="stat-row">
+                    <img src="heart-icon.png" class="stat-icon" onerror="this.innerHTML='❤️'">
+                    <div class="stat-bar-container">
+                        <div class="stat-bar health-bar" id="healthBar"></div>
+                        <span class="stat-text"><span id="healthText">100</span> / <span id="maxHealthText">100</span></span>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <img src="star-icon.png" class="stat-icon" onerror="this.innerHTML='⭐'">
+                    <div class="stat-bar-container">
+                        <div class="stat-bar xp-bar" id="xpBar"></div>
+                        <span class="stat-text"><span id="xpText">0</span> / <span id="xpNeededText">100</span> XP</span>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <img src="coin-icon.png" class="stat-icon" onerror="this.innerHTML='🪙'">
+                    <div class="gold-display">
+                        <span id="goldText">50</span> Gold
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-stats">
+                <div class="quick-stat">⚔️ ATK: <span id="attackText">10</span></div>
+                <div class="quick-stat">💪 Stamina: <span id="staminaText">100</span></div>
+                <div class="quick-stat">🎯 Quests: <span id="questCountText">0</span></div>
+            </div>
+        </div>
+
+        <!-- Minimap -->
+        <div id="minimap">
+            <div class="minimap-title">Map</div>
+            <div class="minimap-locations">
+                <div class="minimap-dot" id="map-town">Town</div>
+                <div class="minimap-dot" id="map-store">Store</div>
+                <div class="minimap-dot" id="map-cave">Cave</div>
+            </div>
+        </div>
+
+        <!-- Main Game Scene -->
+        <div id="gameScene">
+            <div id="sceneBackground" class="scene-bg"></div>
+            
+            <!-- Environmental Effects -->
+            <div id="environmentEffects"></div>
+
+            <!-- Monster Display -->
+            <div id="monsterDisplay" class="hidden">
+                <div class="monster-container shake">
+                    <img id="monsterImage" src="" alt="Monster">
+                    <div class="monster-info">
+                        <h3 id="monsterName"></h3>
+                        <div class="monster-health-bar">
+                            <div id="monsterHealthBar" class="stat-bar health-bar"></div>
+                            <span id="monsterHealthText"></span>
+                        </div>
+                        <p class="monster-level">Level <span id="monsterLevel"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player Display (in combat) -->
+            <div id="playerDisplay" class="hidden">
+                <img src="player-sprite.png" class="player-combat-sprite" alt="Player">
+            </div>
+
+            <!-- Scene Text & Narrative -->
+            <div id="sceneText" class="scene-text-box">
+                <p id="narrativeText">Welcome to Dragon Repeller. Your journey begins...</p>
+            </div>
+
+            <!-- Combat Log -->
+            <div id="combatLog" class="hidden">
+                <div class="log-title">Combat Log</div>
+                <div id="logContent"></div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="actionButtons">
+            <button id="button1" class="action-btn"></button>
+            <button id="button2" class="action-btn"></button>
+            <button id="button3" class="action-btn"></button>
+            <button id="button4" class="action-btn hidden"></button>
+        </div>
+
+        <!-- Inventory Panel -->
+        <div id="inventoryPanel">
+            <h3>Inventory</h3>
+            <div id="inventoryGrid"></div>
+            <button class="toggle-inventory" onclick="toggleInventory()">📦</button>
+        </div>
+
+        <!-- Quest Panel -->
+        <div id="questPanel">
+            <h3>Active Quests</h3>
+            <div id="questList"></div>
+        </div>
+
+        <!-- Achievement Notification -->
+        <div id="achievementNotif" class="achievement-notification hidden">
+            <div class="achievement-icon">🏆</div>
+            <div class="achievement-text">
+                <h4>Achievement Unlocked!</h4>
+                <p id="achievementName"></p>
+            </div>
+        </div>
+
+        <!-- Level Up Notification -->
+        <div id="levelUpNotif" class="level-up-notification hidden">
+            <h2>LEVEL UP!</h2>
+            <p>You reached level <span id="newLevel"></span>!</p>
+        </div>
+
+        <!-- Particle Container -->
+        <div id="particleContainer"></div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="bgMusicTown" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-games-worldbeat-466.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusicCombat" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-epic-battle-loop-19.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfxAttack">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-sword-slash-swoosh-1476.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfxHit">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-player-losing-or-failing-2042.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfxCoin">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-coin-win-notification-1992.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfxLevelUp">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script-enhanced.js"></script>
 </body>
 </html>
